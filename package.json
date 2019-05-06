@@ -1,0 +1,28 @@
+{
+  "name": "blog",
+  "version": "1.0.0",
+  "description": "attainu blog",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mojom2k/blog.git"
+  },
+  "author": "mohit",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mojom2k/blog/issues"
+  },
+  "homepage": "https://github.com/mojom2k/blog#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.16.4",
+    "express-handlebars": "^3.0.2",
+    "handlebars": "^4.1.2",
+    "hbs": "^4.0.4",
+    "mongodb": "^3.2.3",
+    "mongoose": "^5.5.5"
+  }
+}
