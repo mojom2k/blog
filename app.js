@@ -12,14 +12,18 @@ var app = express();
 app.set("view engine", "hbs");
 
 // Use body parser
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({
+    extended: false
+}));
 
 // The DB stuff
 var DB;
 
-var mongoClient = new mongodb.MongoClient('mongodb://localhost:27017/blog', {useNewUrlParser: true});
-mongoClient.connect(function(err) {
-    if(err) {
+var mongoClient = new mongodb.MongoClient('mongodb://localhost:27017/blog', {
+    useNewUrlParser: true
+});
+mongoClient.connect(function (err) {
+    if (err) {
         console.log("Error connecting to MongoDB");
     } else {
         console.log("Connection to MongoDB database blog established");
@@ -28,9 +32,9 @@ mongoClient.connect(function(err) {
 });
 
 // // List all the blog posts
-app.get("/", function(request, response){
-    DB.collection("posts").find({}).toArray(function(error, allPosts){
-        if(error) {
+app.get("/", function (request, response) {
+    DB.collection("posts").find({}).toArray(function (error, allPosts) {
+        if (error) {
             response.send("Error fetching blog posts");
         } else {
             var data = {
@@ -43,10 +47,10 @@ app.get("/", function(request, response){
 
 
 // Show add post form
-app.get("/add", function(request, response) {
+app.get("/add", function (request, response) {
     var data = {};
 
-    if(request.query.success) {
+    if (request.query.success) {
         data.postAdded = true;
     }
 
@@ -55,16 +59,16 @@ app.get("/add", function(request, response) {
 
 
 // Create a new post
-app.post("/add", function(request, response){
+app.post("/add", function (request, response) {
     var data = {
         title: request.body.title,
         content: request.body.content
     };
 
     // Insert the data in the DB.
-    DB.collection("posts").insertOne(data, function(error, result) {
+    DB.collection("posts").insertOne(data, function (error, result) {
 
-        if(error) {
+        if (error) {
             response.send("Error creating your blog post");
             return;
         } else {
@@ -77,19 +81,21 @@ app.post("/add", function(request, response){
 
 
 // Show edit form
-app.get("/edit/:mongoId", function(request, response){
+app.get("/edit/:mongoId", function (request, response) {
 
     var mongoId = request.params.mongoId;
-    
+
     var editSuccess = request.query.success;
 
-    DB.collection("posts").findOne({_id: mongodb.ObjectID(mongoId) }, function(error, data){
-        if(error) {
+    DB.collection("posts").findOne({
+        _id: mongodb.ObjectID(mongoId)
+    }, function (error, data) {
+        if (error) {
             response.send("Error: Not found");
             return;
         }
 
-        if(editSuccess) {
+        if (editSuccess) {
             data.success = true;
         }
 
@@ -101,19 +107,78 @@ app.get("/edit/:mongoId", function(request, response){
 
 
 // Update a blog post
-app.post("/edit/:mongoId", function(request, response){
+app.post("/edit/:mongoId", function (request, response) {
 
     var mongoId = request.params.mongoId;
 
     var newTitle = request.body.title;
     var newContent = request.body.content;
 
-    DB.collection("posts").updateOne(
-        {_id: mongodb.ObjectID(mongoId)},   // Filter an unique object
-        {$set: {title: newTitle, content: newContent} }, // The new data to update
-        function(error, data) { // The callback after update is done
+    DB.collection("posts").updateOne({
+            _id: mongodb.ObjectID(mongoId)
+        }, // Filter an unique object
+        {
+            $set: {
+                title: newTitle,
+                content: newContent
+            }
+        }, // The new data to update
+        function (error, data) { // The callback after update is done
 
-           response.redirect("/edit/" + mongoId + "?success=true");
+            response.redirect("/edit/" + mongoId + "?success=true");
+
+        });
+
+});
+
+// Show sign up page
+app.get("/signup", function (request, response) {
+    response.render("signup.hbs");
+});
+
+
+// Create a new user
+app.post("/signup", function (request, response) {
+    var userData = {
+        name: request.body.name,
+        email: request.body.email,
+        password: request.body.password
+    };
+
+    // Insert sign up data in the users collection
+    DB.collection("users").insertOne(userData, function (error, result) {
+
+        if (error) {
+            response.send("Error creating your user account");
+            return;
+        } else {
+            response.redirect("/signup?success=true");
+        }
+    });
+});
+
+// Show login page
+app.get("/login", function (request, response) {
+    response.render("login.hbs");
+});
+
+// validate user details
+app.post("/login", function (request, response) {
+    // var loginData = {
+    //     email: request.body.email,
+    //     password: request.body.password
+    // };
+
+    // verify login details in the users collection
+    DB.collection("users").findOne({
+        email: request.body.email,
+        password: request.body.password
+    }, function (err, user) {
+
+        if (err) {
+            response.send("User not found.");
+        }
+        response.send("Logged in succesfully.");
 
     });
 
