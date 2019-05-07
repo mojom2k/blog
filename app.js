@@ -166,11 +166,11 @@ app.get("/login", function (request, response) {
 app.post('/login', function (request, response) {
 
     DB.collection('users').findOne({
-        name: request.body.name
+        email: request.body.email
     }, function (err, user) {
         if (user === null) {
-            response.send("Login invalid");
-        } else if (user.name === request.body.name && user.password === request.body.password) {
+            response.send("Login invalidddd");
+        } else if (user.email === request.body.email && user.password === request.body.password) {
             response.send("Login successfull!");
         } else {
             response.send("Login invalid");
