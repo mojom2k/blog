@@ -163,25 +163,21 @@ app.get("/login", function (request, response) {
 });
 
 // validate user details
-app.post("/login", function (request, response) {
-    // var loginData = {
-    //     email: request.body.email,
-    //     password: request.body.password
-    // };
+app.post('/login', function (request, response) {
 
-    // verify login details in the users collection
-    DB.collection("users").findOne({
-        email: request.body.email,
-        password: request.body.password
+    DB.collection('users').findOne({
+        name: request.body.name
     }, function (err, user) {
-
-        if (err) {
-            response.send("User not found.");
+        if (user === null) {
+            response.send("Login invalid");
+        } else if (user.name === request.body.name && user.password === request.body.password) {
+            response.send("Login successfull!");
+        } else {
+            response.send("Login invalid");
         }
-        response.send("Logged in succesfully.");
-
     });
 
 });
+
 
 app.listen(3000);
